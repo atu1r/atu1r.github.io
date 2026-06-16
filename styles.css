@@ -12,9 +12,9 @@
   --text: #c9d4e0;
   --text-strong: #e6edf3;
   --text-muted: #7d8aa0;
-  --accent: #4fd1c5;        /* teal */
-  --accent-soft: rgba(79, 209, 197, 0.1);
-  --accent-glow: rgba(79, 209, 197, 0.25);
+  --accent: #ff8c42;        /* orange */
+  --accent-soft: rgba(255, 140, 66, 0.1);
+  --accent-glow: rgba(255, 140, 66, 0.25);
 
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
