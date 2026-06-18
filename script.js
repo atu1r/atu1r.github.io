@@ -47,6 +47,59 @@ if (reduceMotion || !('IntersectionObserver' in window)) {
 const yearEl = document.querySelector('[data-year]');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
+// ---- Project detail modals ----
+document.querySelectorAll('.project-card[data-project]').forEach((card) => {
+  const dialog = document.getElementById('modal-' + card.dataset.project);
+  if (!dialog) return;
+
+  const open = () => {
+    if (typeof dialog.showModal === 'function') dialog.showModal();
+  };
+
+  card.addEventListener('click', (e) => {
+    // Let real links inside the card (e.g. the GitHub icon) behave normally.
+    if (e.target.closest('a')) return;
+    open();
+  });
+  card.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      open();
+    }
+  });
+
+  // Close via the X button.
+  dialog.querySelector('[data-close]')?.addEventListener('click', () => dialog.close());
+
+  // Close when clicking the backdrop (outside the content box).
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+
+  // Pause any playing video when the dialog closes.
+  dialog.addEventListener('close', () => {
+    dialog.querySelectorAll('video').forEach((v) => v.pause());
+  });
+
+  // Drop media that isn't present yet so the layout stays clean.
+  const mediaBox = dialog.querySelector('[data-media]');
+  const dropMedia = (el) => {
+    el.remove();
+    if (mediaBox && !mediaBox.querySelector('img, video')) mediaBox.style.display = 'none';
+  };
+  dialog.querySelectorAll('.modal-shot').forEach((img) => {
+    img.addEventListener('error', () => dropMedia(img));
+  });
+  dialog.querySelectorAll('.modal-video').forEach((video) => {
+    video.addEventListener('error', () => dropMedia(video));
+    video.querySelectorAll('source').forEach((s) =>
+      s.addEventListener('error', () => {
+        if (video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) dropMedia(video);
+      })
+    );
+  });
+});
+
 // ---- Theme toggle (light / dark) ----
 const root = document.documentElement;
 const themeBtn = document.querySelector('.theme-toggle');
