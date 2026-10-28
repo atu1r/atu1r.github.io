@@ -2,28 +2,32 @@
 const toggle = document.querySelector('.nav-toggle');
 const navLinks = document.querySelector('.nav-links');
 
-toggle.addEventListener('click', () => {
-  const open = navLinks.classList.toggle('open');
+const setMenu = (open) => {
+  navLinks.classList.toggle('open', open);
   toggle.setAttribute('aria-expanded', String(open));
+  toggle.textContent = open ? 'close' : 'menu';
+};
+
+toggle.addEventListener('click', () => setMenu(!navLinks.classList.contains('open')));
+
+// Close the menu when a link is tapped, or on Escape / a tap outside the bar
+navLinks.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setMenu(false)));
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') setMenu(false);
+});
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.topbar')) setMenu(false);
 });
 
-// Close the menu when a link is tapped
-navLinks.querySelectorAll('a').forEach((link) =>
-  link.addEventListener('click', () => {
-    navLinks.classList.remove('open');
-    toggle.setAttribute('aria-expanded', 'false');
-  })
-);
-
-// ---- App bar elevation on scroll ----
-const header = document.querySelector('.app-bar');
+// ---- Top bar background on scroll ----
+const header = document.querySelector('.topbar');
 const onScroll = () => header.classList.toggle('scrolled', window.scrollY > 10);
 onScroll();
 window.addEventListener('scroll', onScroll, { passive: true });
 
 // ---- Reveal sections on scroll ----
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-const revealItems = document.querySelectorAll('.section, .hero');
+const revealItems = document.querySelectorAll('.section');
 
 if (reduceMotion || !('IntersectionObserver' in window)) {
   revealItems.forEach((el) => el.classList.add('visible'));
@@ -38,7 +42,8 @@ if (reduceMotion || !('IntersectionObserver' in window)) {
         }
       });
     },
-    { threshold: 0.12 }
+    // Reveal as soon as a section's top edge is on screen, even for tall ones
+    { rootMargin: '0px 0px -8% 0px' }
   );
   revealItems.forEach((el) => observer.observe(el));
 }
@@ -50,23 +55,21 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 // ---- Theme toggle (light / dark) ----
 const root = document.documentElement;
 const themeBtn = document.querySelector('.theme-toggle');
-const isLight = () => root.getAttribute('data-theme') === 'light';
+const themeMeta = document.querySelector('meta[name="theme-color"]');
+const isDark = () => root.getAttribute('data-theme') === 'dark';
 
-const syncThemeBtn = () => {
-  if (!themeBtn) return;
-  const icon = themeBtn.querySelector('.theme-toggle-icon');
-  // Show the icon for the mode you'd switch *to*.
-  if (icon) icon.textContent = isLight() ? 'dark_mode' : 'light_mode';
-  themeBtn.setAttribute('aria-pressed', String(isLight()));
+const syncTheme = () => {
+  // Label the button with the mode you'd switch *to* (the icon is swapped in CSS).
+  if (themeBtn) themeBtn.setAttribute('aria-label', isDark() ? 'Switch to light theme' : 'Switch to dark theme');
+  if (themeMeta) themeMeta.setAttribute('content', getComputedStyle(root).getPropertyValue('--bg').trim());
 };
-syncThemeBtn();
+syncTheme();
 
 if (themeBtn) {
   themeBtn.addEventListener('click', () => {
-    const next = isLight() ? 'dark' : 'light';
-    if (next === 'light') root.setAttribute('data-theme', 'light');
-    else root.removeAttribute('data-theme');
+    const next = isDark() ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
     try { localStorage.setItem('theme', next); } catch (e) {}
-    syncThemeBtn();
+    syncTheme();
   });
 }

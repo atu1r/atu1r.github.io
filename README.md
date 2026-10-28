@@ -2,29 +2,35 @@
 
 My personal website & portfolio, served at **https://atu1r.github.io**.
 
-A modern, minimal, dark-themed single-page site built with plain HTML, CSS, and
-vanilla JavaScript, with no build step required.
+A single-page site styled as a `psql` session, with light and dark themes,
+built with plain HTML, CSS, and vanilla JavaScript, with no build step required.
 
 ## Structure
 
-| File         | Purpose                                          |
-| ------------ | ------------------------------------------------ |
-| `index.html` | Page content (hero, about, projects, skills, contact) |
-| `styles.css` | Dark theme, layout, and responsive styles        |
-| `script.js`  | Mobile nav, scroll header, reveal-on-scroll      |
+| File         | Purpose                                                              |
+| ------------ | -------------------------------------------------------------------- |
+| `index.html` | Page content (hero, experience, education, projects, skills, contact) |
+| `styles.css` | psql theme (light + dark), layout, and responsive styles             |
+| `script.js`  | Mobile nav, scroll header, reveal-on-scroll, theme toggle            |
 
 ## Customizing
 
-Most content lives in `index.html`. Search for the placeholder text and update:
+Most content lives in `index.html`. Each section is a `-- Heading`, a query
+line, and the query's result:
 
-- **Bio & about**: the `.hero-bio` and `.about-text` paragraphs.
-- **Projects**: each `<article class="project-card">`. Update the title,
-  description, tech list, and the link `href`s.
-- **Skills**: the `<li>` items inside each `.skill-group`.
-- **Social links**: the footer LinkedIn and GitHub `href`s.
+- **Hero**: `.hero-name`, `.hero-summary`, and the `.hero-links` buttons.
+- **Experience / Projects**: each `<article class="record">`, shown in psql's
+  expanded display. Fields are `<dt>`/`<dd>` pairs; wrap a metric in
+  `<span class="n">` to highlight it like a number literal.
+- **Education / Skills / Contact**: rows of each `<table class="psql">`. On
+  narrow screens, `x-auto` tables switch to expanded display (like `\x auto`),
+  labelled from each cell's `data-label`, so keep those in sync with the column names.
+- `(n rows)` lines and record numbers: record numbers are automatic, row counts
+  are written by hand.
 
-Theme colors are CSS variables at the top of `styles.css` (`:root`). Change
-`--accent` to recolor the whole site.
+Theme colors are CSS variables at the top of `styles.css`: `:root` is the
+light theme and `[data-theme="dark"]` the dark one. Light is the default, and
+the toggle remembers each visitor's choice.
 
 ## Local preview
 
